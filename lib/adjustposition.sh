@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 adjustposition() {
-  local newy newx
+  local newy newx opty
+
+  opty="${1:-0}"
 
   declare -A __menu
 
@@ -19,12 +21,17 @@ adjustposition() {
     newx=${__menu[X]}
   fi
 
-  if ((__menu[Y]<i3list[WAY])); then
+
+  if ((opty<=-0)); then
+    opty=$((i3list[WAH]-((opty*-1)+__menu[HEIGHT])))
+  fi
+
+  if ((opty<i3list[WAY])); then
     newy="${i3list[WAY]}"
-  elif (((__menu[Y]+__menu[HEIGHT])>i3list[WAH])); then
+  elif (((opty+__menu[HEIGHT])>i3list[WAH])); then
     newy="$((i3list[WAH]-__menu[HEIGHT]))"
   else
-    newy=${__menu[Y]}
+    newy="$opty"
   fi
 
   xdotool windowmove "${__menu[WINDOW]}" "$newx" "$newy"

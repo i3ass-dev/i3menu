@@ -236,8 +236,8 @@ setgeometry(){
 
   [[ -n ${__o[ypos]:-} ]] && __ypos=${__o[ypos]}
 
-  ((__o[xoffset]>0)) && __xpos=$((__xpos+__o[xoffset]))
-  ((__o[yoffset]>0)) && __ypos=$((__ypos+__o[yoffset]))
+  [[ ${__o[xoffset]} =~ ^[0-9-]+$ ]] && __xpos=$((__xpos+__o[xoffset]))
+  [[ ${__o[yoffset]} =~ ^[0-9-]+$ ]] && __ypos=$((__ypos+__o[yoffset]))
 
   [[ ${__o[width]} =~ [%]$ ]] || __o[width]=${__o[width]}px
   __height+="px"
