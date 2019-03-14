@@ -36,11 +36,6 @@ main(){
   setgeometry "${__o[layout]:-default}"
   setincludes
 
-  # if layout mouse, get menu position
-  # and adjust if it is outside the screen
-
-  [[ ${__layout:-default} = mouse ]] && adjustposition &
-
   if [[ -n $__list ]] && ((__nolist!=1));then
     printf '%s\n' "${__o[top]:-}" "__START" "${__list}" | awk '
     {

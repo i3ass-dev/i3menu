@@ -80,7 +80,7 @@ setgeometry(){
   : "${__o[xoffset]:=0}"
   : "${__o[yoffset]:=0}"
   : "${__o[width]:="100%"}"
-  : "${__height:=${__o[height]:-20}}"
+  : "${__height:=${__o[height]:-${i3list[TWB]:-20}}}"
   : "${__o[anchor]:=1}"
   : "${__orientation:=horizontal}"
 
@@ -180,7 +180,6 @@ setgeometry(){
           __ypos=${i3list[SAC]:-0}
           __o[width]=${i3list[SCD]:-${i3list[SAB]:-${i3list[WAW]}}}
           __height=$((i3list[WAH]-__ypos))
-          echo $__ypos
         ;;
 
         D) 
@@ -190,6 +189,8 @@ setgeometry(){
           __height=$((i3list[WAH]-__ypos))
         ;;
       esac
+      ((__height==0)) && __height="${i3list[WAH]}"
+      ((__o[width]==0)) && __o[width]="${i3list[WAW]}"
       __orientation=vertical
       __o[orientation]=""
     ;;
@@ -209,7 +210,7 @@ setgeometry(){
 
   esac
 
-  case ${__o[anchor]:-1} in
+  case ${__o[anchor]:=1} in
     1   ) __anchor="north west" ;;
     2   ) __anchor="north" ;;
     3   ) __anchor="north east" ;;
@@ -222,13 +223,22 @@ setgeometry(){
     *   ) __anchor="north west" ;;
   esac
 
-  [[ -n ${__o[xpos]:-} ]] && __xpos=${__o[xpos]}
+  [[ -n ${__o[xpos]:-} ]] && {
+    if ((__o[xpos]<0)) || ((__o[xpos]==-0)); then
+      __xpos=$((i3list[WAW]-((__o[xpos]*-1)+__o[width])))
+    else
+      __xpos=${__o[xpos]}
+    fi
+  }
+
+  ((__height<20)) && __height=20
+  [[ -n ${__o[height]} ]] && __height="${__o[height]}"
+
   [[ -n ${__o[ypos]:-} ]] && __ypos=${__o[ypos]}
+
   ((__o[xoffset]>0)) && __xpos=$((__xpos+__o[xoffset]))
   ((__o[yoffset]>0)) && __ypos=$((__ypos+__o[yoffset]))
 
   [[ ${__o[width]} =~ [%]$ ]] || __o[width]=${__o[width]}px
-  ((__height<20)) && __height=20
-  [[ -n ${__o[height]} ]] && __height="${__o[height]}"
   __height+="px"
 }
