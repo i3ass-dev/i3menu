@@ -9,8 +9,13 @@ EOB
 }
 
 
+if [[ -z $XDG_CONFIG_HOME ]]; then
+  __defaultconfdir="$HOME/.config"
+else
+  __defaultconfdir="$XDG_CONFIG_HOME"
+fi
 # environment variables
-: "${I3MENU_DIR:=$XDG_CONFIG_HOME/i3menu}"
+: "${I3MENU_DIR:=$__defaultconfdir/i3menu}"
 
 
 main(){
