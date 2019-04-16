@@ -8,6 +8,7 @@ updated: 2019-03-14 by budRich
 EOB
 }
 
+
 if [[ -z $XDG_CONFIG_HOME ]]; then
   __defaultconfdir="$HOME/.config"
 else
@@ -15,6 +16,7 @@ else
 fi
 # environment variables
 : "${I3MENU_DIR:=$__defaultconfdir/i3menu}"
+
 
 ___printhelp(){
   
