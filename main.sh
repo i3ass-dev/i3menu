@@ -18,7 +18,7 @@ main(){
   declare -A i3list
   eval "$(i3list "${listopts[@]}")"
 
-  [[ -n ${__o[option]} ]] && __opts+=" ${__o[option]}"
+  [[ -n ${__o[options]} ]] && __opts+=" ${__o[options]}"
   [[ -n ${__o[filter]} ]] && __cmd+="-filter '${__o[filter]}' "
   
   [[ -n ${__o[show]} ]] \

@@ -11,6 +11,41 @@ aconfdirs=(
 
 mkdir -p "${aconfdirs[@]}"
 
+cat << 'EOCONF' > "$trgdir/base/themevars.rasi"
+* {
+  fg:          #988d6d;
+  bg:          #FFFFD8;
+
+  activefg:    #FFFFE8;
+  activehl:    #424242;
+  activebg:    #8888c8;
+
+  inactivefg:  #988d6d;
+  inactivebg:  #e8eb98;
+
+  red:         #b85c57;
+  green:       #40883f;
+  blue:        #0287c8;
+  yellow:      #989848;
+  cyan:        #4fa8a8;
+  magenta:     #8888c8;
+
+  light:       #FFFFE8;
+  dark:        #424242;
+
+  fg2:         #B8B09A;
+  comment:     #B8B09A;
+
+  bg2:         #FFFFE8;
+
+  selectedfg:  #FFFFE8;
+  selectedbg:  #8888c8;
+
+  font1: "FixedFixedsys 12";
+}
+
+EOCONF
+
 cat << 'EOCONF' > "$trgdir/base/i3menu.rasi"
 /**
 * Oneliner - by budRich 2018
@@ -68,38 +103,18 @@ cat << 'EOCONF' > "$trgdir/base/i3menu.rasi"
 // syntax:ssDslash
 EOCONF
 
-cat << 'EOCONF' > "$trgdir/base/themevars.rasi"
-* {
-  fg:          #988d6d;
-  bg:          #FFFFD8;
-
-  activefg:    #FFFFE8;
-  activehl:    #424242;
-  activebg:    #8888c8;
-
-  inactivefg:  #988d6d;
-  inactivebg:  #e8eb98;
-
-  red:         #b85c57;
-  green:       #40883f;
-  blue:        #0287c8;
-  yellow:      #989848;
-  cyan:        #4fa8a8;
-  magenta:     #8888c8;
-
-  light:       #FFFFE8;
-  dark:        #424242;
-
-  fg2:         #B8B09A;
-  comment:     #B8B09A;
-
-  bg2:         #FFFFE8;
-
-  selectedfg:  #FFFFE8;
-  selectedbg:  #8888c8;
-
-  font1: "FixedFixedsys 12";
+cat << 'EOCONF' > "$trgdir/themes/red.rasi"
+*{
+  background-color:    @red;
+  border-color:        @red;
+  text-color:          @light;
+  selbg:               @dark;
+  selfg:               @light;
+  promptbg:            @light;
+  promptfg:            @red;
+  font:                @font1; 
 }
+
 
 EOCONF
 
@@ -140,21 +155,6 @@ cat << 'EOCONF' > "$trgdir/themes/light.rasi"
   promptfg:            @light;
   font:                @font1; 
 }
-EOCONF
-
-cat << 'EOCONF' > "$trgdir/themes/red.rasi"
-*{
-  background-color:    @red;
-  border-color:        @red;
-  text-color:          @light;
-  selbg:               @dark;
-  selfg:               @light;
-  promptbg:            @light;
-  promptfg:            @red;
-  font:                @font1; 
-}
-
-
 EOCONF
 
 }
