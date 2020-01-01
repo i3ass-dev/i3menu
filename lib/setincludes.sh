@@ -5,7 +5,7 @@ setincludes(){
   local window_content horibox_content listview_lines
 
   [[ -n ${__o[prompt]:-} ]] \
-    && __cmd+="-p ${__o[prompt]} " \
+    && __cmd+="-p '${__o[prompt]}' " \
     || __o[include]=${__o[include]/[p]/}
 
   if [[ -z ${__list:-} ]]; then
