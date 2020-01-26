@@ -3,7 +3,7 @@
 __=""
 __stdin=""
 
-sleep .01
+sleep .05
 read -rN1 -t0.01 __  && {
   (( $? <= 128 ))  && {
     IFS= read -rd '' __stdin
