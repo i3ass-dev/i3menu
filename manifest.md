@@ -10,6 +10,7 @@ type:          default
 dependencies:  [bash, gawk, rofi, i3list, xdotool]
 see-also:      [bash(1), awk(1), rofi(1), rofi-theme(1), i3list(1), xdotool(1)]
 environ:
+    XDG_CONFIG_HOME: $HOME/.config
     I3MENU_DIR: $XDG_CONFIG_HOME/i3menu
 synopsis: |
     [--theme THEME] [--layout|-a LAYOUT] [--include|-i INCLUDESTRING] [--top|-t TOP] [--xpos|-x INT] [--xoffset INT] [--ypos|-y INT] [--yoffset INT] [--width|-w INT] [--options|-o OPTIONS] [--prompt|-p PROMPT]  [--filter|-f FILTER] [--show MODE] [--modi MODI] [--target TARGET] [--orientation ORIENTATION] [--anchor INT] [--height INT] [--fallback FALLBACK]
