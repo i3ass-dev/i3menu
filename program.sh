@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.024
-updated: 2020-01-01 by budRich
+i3menu - version: 0.025
+updated: 2020-01-26 by budRich
 EOB
 }
 
@@ -862,7 +862,8 @@ setincludes(){
 __=""
 __stdin=""
 
-read -N1 -t0.01 __  && {
+sleep .05
+read -rN1 -t0.01 __  && {
   (( $? <= 128 ))  && {
     IFS= read -rd '' __stdin
     __stdin="$__$__stdin"
