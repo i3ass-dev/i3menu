@@ -260,6 +260,10 @@ Show version and exit
 ENVIRONMENT
 -----------
 
+`XDG_CONFIG_HOME`  
+
+defaults to: $HOME/.config
+
 `I3MENU_DIR`  
 Path to config directory.
 defaults to: $XDG_CONFIG_HOME/i3menu

@@ -3,19 +3,15 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.025
+i3menu - version: 0.026
 updated: 2020-01-26 by budRich
 EOB
 }
 
 
-if [[ -z $XDG_CONFIG_HOME ]]; then
-  __defaultconfdir="$HOME/.config"
-else
-  __defaultconfdir="$XDG_CONFIG_HOME"
-fi
 # environment variables
-: "${I3MENU_DIR:=$__defaultconfdir/i3menu}"
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
+: "${I3MENU_DIR:=$XDG_CONFIG_HOME/i3menu}"
 
 
 main(){
