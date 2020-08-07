@@ -2,7 +2,7 @@
 
 main(){
 
-  local listopts
+  declare -a listopts
 
   # globals
   __cmd="rofi -theme <(themefile) "
@@ -11,9 +11,8 @@ main(){
   : "${__o[include]:=pel}"
 
   # options to pass to i3list via --target optiob
-  listopts=()
-  [[ -n "${__o[target]:-}" ]] \
-    && listopts=(${__o[target]:-})
+  [[ -n "${__o[target]}" ]] \
+    && mapfile -td $'\n\s' listopts <<< "${__o[target]}"
 
   declare -A i3list
   eval "$(i3list "${listopts[@]}")"
@@ -32,6 +31,24 @@ main(){
   else
     __list=nolist
   fi
+
+  local target
+
+  [[ ${target:=${__o[layout]}} =~ A|B|C|D ]] && {
+    declare -i vpos
+    q=(A B C D)
+    for k in "${!q[@]}"; do
+      vpos=${i3list[VP${q[$k]}]:=$k}
+      (( k != vpos )) && [[ $target =~ ${q[k]} ]] \
+        && target=${target//${q[$k]}/@@$vpos}
+    done
+
+    [[ $target =~ @@ ]] && for k in "${!q[@]}"; do
+      target=${target//@@$k/${q[$k]}}
+    done
+
+    __o[layout]=$target
+  }
 
   setgeometry "${__o[layout]:-default}"
   setincludes

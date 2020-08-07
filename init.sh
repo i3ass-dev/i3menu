@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.026
-updated: 2020-01-26 by budRich
+i3menu - version: 0.047
+updated: 2020-08-07 by budRich
 EOB
 }
 
@@ -52,6 +52,7 @@ default to a single line (dmenu like) menu at the
 top of the screen. If however a value to this
 option is one of the following:  
 
+
 | LAYOUT     | menu location and dimensions 
 |:-----------|:---------------
 | mouse      | At the mouse position (requires xdotool)
@@ -59,7 +60,6 @@ option is one of the following:
 | titlebar   | The titlebar of the currently active window.
 | tab        | The tab (or titlebar if it isn't tabbed) of the currently active window.
 | A,B,C or D | The i3fyra container of the same name if it is visible. If target container isn't visible the menu will be displayed at the default location.
-
 
 titlebar and tab LAYOUT will be displayed as a
 single line (dmenu like) menu, and the other
@@ -83,12 +83,12 @@ INCLUDESTRING can be set to force which elements
 of the menu to include. INCLUDESTRING can be one
 or more of the following character:  
 
+
 | char | element  |
 |:-----|:---------|
 |p | prompt   |
 |e | entrybox |
 |l | list     |
-
 
 echo "list" | i3menu --include le --prompt "enter
 a value: "  

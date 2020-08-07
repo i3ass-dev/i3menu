@@ -16,10 +16,13 @@ setfallback(){
 
  __o[fallback]=""
 
+ declare -a opts
+ mapfile -td $'\n\s' opts <<< "$*"
+
  eval set -- "$(getopt --name "i3menu" \
    --options "a:i:t:x:y:w:o:p:f:" \
    --longoptions "theme:,layout:,include:,top:,xpos:,xoffset:,ypos:,yoffset:,width:,options:,prompt:,filter:,show:,modi:,target:,orientation:,anchor:,height:,fallback:" \
-   -- "$@"
+   -- "${opts[@]}"
  )"
 
  while true; do
@@ -89,7 +92,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else
@@ -102,7 +105,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else
@@ -115,7 +118,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else

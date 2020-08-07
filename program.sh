@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.026
-updated: 2020-01-26 by budRich
+i3menu - version: 0.047
+updated: 2020-08-07 by budRich
 EOB
 }
 
@@ -16,7 +16,7 @@ EOB
 
 main(){
 
-  local listopts
+  declare -a listopts
 
   # globals
   __cmd="rofi -theme <(themefile) "
@@ -25,9 +25,8 @@ main(){
   : "${__o[include]:=pel}"
 
   # options to pass to i3list via --target optiob
-  listopts=()
-  [[ -n "${__o[target]:-}" ]] \
-    && listopts=(${__o[target]:-})
+  [[ -n "${__o[target]}" ]] \
+    && mapfile -td $'\n\s' listopts <<< "${__o[target]}"
 
   declare -A i3list
   eval "$(i3list "${listopts[@]}")"
@@ -46,6 +45,24 @@ main(){
   else
     __list=nolist
   fi
+
+  local target
+
+  [[ ${target:=${__o[layout]}} =~ A|B|C|D ]] && {
+    declare -i vpos
+    q=(A B C D)
+    for k in "${!q[@]}"; do
+      vpos=${i3list[VP${q[$k]}]:=$k}
+      (( k != vpos )) && [[ $target =~ ${q[k]} ]] \
+        && target=${target//${q[$k]}/@@$vpos}
+    done
+
+    [[ $target =~ @@ ]] && for k in "${!q[@]}"; do
+      target=${target//@@$k/${q[$k]}}
+    done
+
+    __o[layout]=$target
+  }
 
   setgeometry "${__o[layout]:-default}"
   setincludes
@@ -109,6 +126,7 @@ default to a single line (dmenu like) menu at the
 top of the screen. If however a value to this
 option is one of the following:  
 
+
 | LAYOUT     | menu location and dimensions 
 |:-----------|:---------------
 | mouse      | At the mouse position (requires xdotool)
@@ -116,7 +134,6 @@ option is one of the following:
 | titlebar   | The titlebar of the currently active window.
 | tab        | The tab (or titlebar if it isn't tabbed) of the currently active window.
 | A,B,C or D | The i3fyra container of the same name if it is visible. If target container isn't visible the menu will be displayed at the default location.
-
 
 titlebar and tab LAYOUT will be displayed as a
 single line (dmenu like) menu, and the other
@@ -140,12 +157,12 @@ INCLUDESTRING can be set to force which elements
 of the menu to include. INCLUDESTRING can be one
 or more of the following character:  
 
+
 | char | element  |
 |:-----|:---------|
 |p | prompt   |
 |e | entrybox |
 |l | list     |
-
 
 echo "list" | i3menu --include le --prompt "enter
 a value: "  
@@ -560,10 +577,13 @@ setfallback(){
 
  __o[fallback]=""
 
+ declare -a opts
+ mapfile -td $'\n\s' opts <<< "$*"
+
  eval set -- "$(getopt --name "i3menu" \
    --options "a:i:t:x:y:w:o:p:f:" \
    --longoptions "theme:,layout:,include:,top:,xpos:,xoffset:,ypos:,yoffset:,width:,options:,prompt:,filter:,show:,modi:,target:,orientation:,anchor:,height:,fallback:" \
-   -- "$@"
+   -- "${opts[@]}"
  )"
 
  while true; do
@@ -633,7 +653,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else
@@ -646,7 +666,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else
@@ -659,7 +679,7 @@ setgeometry(){
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
-      eval setfallback ${__o[fallback]}
+      setfallback "${__o[fallback]}"
       setgeometry "${__o[layout]:-default}"
       return
     else
