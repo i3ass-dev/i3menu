@@ -2,7 +2,7 @@
 description: >
   Adds more features to rofi when used in i3wm
 updated:       2020-08-07
-version:       0.047
+version:       0.063
 author:        budRich
 repo:          https://github.com/budlabs/i3ass
 created:       2018-07-21

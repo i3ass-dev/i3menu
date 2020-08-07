@@ -32,23 +32,8 @@ main(){
     __list=nolist
   fi
 
-  local target
-
-  [[ ${target:=${__o[layout]}} =~ A|B|C|D ]] && {
-    declare -i vpos
-    q=(A B C D)
-    for k in "${!q[@]}"; do
-      vpos=${i3list[VP${q[$k]}]:=$k}
-      (( k != vpos )) && [[ $target =~ ${q[k]} ]] \
-        && target=${target//${q[$k]}/@@$vpos}
-    done
-
-    [[ $target =~ @@ ]] && for k in "${!q[@]}"; do
-      target=${target//@@$k/${q[$k]}}
-    done
-
-    __o[layout]=$target
-  }
+  [[ ${__o[layout]} =~ A|B|C|D ]] \
+    && __o[layout]=$(getvirtualpos "${__o[layout]}")
 
   setgeometry "${__o[layout]:-default}"
   setincludes

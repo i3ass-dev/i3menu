@@ -3,7 +3,7 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.047
+i3menu - version: 0.063
 updated: 2020-08-07 by budRich
 EOB
 }

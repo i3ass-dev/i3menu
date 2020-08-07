@@ -3,7 +3,7 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.047
+i3menu - version: 0.063
 updated: 2020-08-07 by budRich
 EOB
 }
@@ -46,23 +46,8 @@ main(){
     __list=nolist
   fi
 
-  local target
-
-  [[ ${target:=${__o[layout]}} =~ A|B|C|D ]] && {
-    declare -i vpos
-    q=(A B C D)
-    for k in "${!q[@]}"; do
-      vpos=${i3list[VP${q[$k]}]:=$k}
-      (( k != vpos )) && [[ $target =~ ${q[k]} ]] \
-        && target=${target//${q[$k]}/@@$vpos}
-    done
-
-    [[ $target =~ @@ ]] && for k in "${!q[@]}"; do
-      target=${target//@@$k/${q[$k]}}
-    done
-
-    __o[layout]=$target
-  }
+  [[ ${__o[layout]} =~ A|B|C|D ]] \
+    && __o[layout]=$(getvirtualpos "${__o[layout]}")
 
   setgeometry "${__o[layout]:-default}"
   setincludes
@@ -561,16 +546,28 @@ ERM(){ >&2 echo "$*"; }
 ERR(){ >&2 echo "[WARNING]" "$*"; }
 ERX(){ >&2 echo "[ERROR]" "$*" && exit 1 ; }
 
-defaultoffset(){
-  __xpos=0
-  __ypos=0
-  __o[xoffset]=0
-  __o[yoffset]=0
-  __o[width]="100%"
-  __height=20
-  __o[layout]=default
-  __orientation=horizontal
-  __anchor=1
+getvirtualpos() {
+
+  local target=$1
+
+  # block below sets "virtual" i3fyra position i3list[VPx]
+  [[ ${target:=${__o[layout]}} =~ A|B|C|D ]] && {
+    declare -i vpos
+    q=([0]=A [1]=B [2]=C [3]=D)
+    for k in "${!q[@]}"; do
+      vpos=${i3list[VP${q[$k]}]:=$k}
+      # if target=A , i3list[VPA]=2 -> target=@@2
+      (( k != vpos )) && [[ $target =~ ${q[k]} ]] \
+        && target=${target//${q[$k]}/@@$vpos}
+    done
+
+    [[ $target =~ @@ ]] && for k in "${!q[@]}"; do
+      # if k=2, target=@@2, q[2]=C -> target=C
+      target=${target//@@$k/${q[$k]}}
+    done
+  }
+
+  echo "$target"
 }
 
 setfallback(){
@@ -578,7 +575,7 @@ setfallback(){
  __o[fallback]=""
 
  declare -a opts
- mapfile -td $'\n\s' opts <<< "$*"
+ eval "opts=($*)"
 
  eval set -- "$(getopt --name "i3menu" \
    --options "a:i:t:x:y:w:o:p:f:" \
@@ -611,7 +608,22 @@ setfallback(){
      *  ) break ;;
    esac
    shift
- done 
+ done
+
+ [[ ${__o[layout]} =~ A|B|C|D ]] \
+   && __o[layout]=$(getvirtualpos "${__o[layout]}")
+}
+
+defaultoffset(){
+  __xpos=0
+  __ypos=0
+  __o[xoffset]=0
+  __o[yoffset]=0
+  __o[width]="100%"
+  __height=20
+  __o[layout]=default
+  __orientation=horizontal
+  __anchor=1
 }
 
 setgeometry(){
@@ -795,7 +807,7 @@ setgeometry(){
     fi
   }
 
-  ((__height<20)) && __height=20
+  ((${__height%px}<20)) && __height=20
   [[ -n ${__o[height]} ]] && __height="${__o[height]}"
 
   [[ -n ${__o[ypos]:-} ]] && __ypos=${__o[ypos]}
