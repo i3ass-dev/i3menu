@@ -241,6 +241,12 @@ Show help and exit.
 
 `--version`|`-v`  
 Show version and exit
+## updates
+
+### 2020.08.10
+
+Added support for i3fyras virtual positions.
+
 
 
 

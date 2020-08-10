@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-i3menu - version: 0.063
-updated: 2020-08-07 by budRich
+i3menu - version: 0.064
+updated: 2020-08-10 by budRich
 EOB
 }
 
@@ -72,6 +72,7 @@ main(){
     '
   fi | eval "${__cmd} ${__opts}"
 }
+
 
 ___printhelp(){
   
@@ -575,6 +576,9 @@ setfallback(){
  __o[fallback]=""
 
  declare -a opts
+ # using eval here to silence shellcheck
+ # $* (__o[fallback]) can look like this: 
+ # __o[fallback]='--layout D --fallback "--layout A"'
  eval "opts=($*)"
 
  eval set -- "$(getopt --name "i3menu" \
