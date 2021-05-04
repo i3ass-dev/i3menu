@@ -27,7 +27,7 @@ main(){
 
   if ((__nolist!=1)); then
     __opts+=" -dmenu"
-    [[ -n $__stdin ]] && __list="${__stdin}"
+    [[ ! -t 0 ]] && __list=stdin
   else
     __list=nolist
   fi
@@ -38,7 +38,9 @@ main(){
   setgeometry "${__o[layout]:-default}"
   setincludes
 
-  if [[ -n $__list ]] && ((__nolist!=1));then
+  if [[ $__list = stdin ]]; then
+    cat
+  elif [[ -n $__list ]] && ((__nolist!=1));then
     printf '%s\n' "${__o[top]:-}" "__START" "${__list}" | awk '
     {
       if (start==1) {
