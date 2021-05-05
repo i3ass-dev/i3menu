@@ -11,11 +11,13 @@ main(){
   : "${__o[include]:=pel}"
 
   # options to pass to i3list via --target optiob
-  [[ -n "${__o[target]}" ]] \
-    && mapfile -td $'\n\s' listopts <<< "${__o[target]}"
+  # [[ -n "${__o[target]}" ]] \
+    # && mapfile -td $'\n\s' listopts <<< "${__o[target]}"
 
   declare -A i3list
-  eval "$(i3list "${listopts[@]}")"
+  eval "$(eval i3list "${__o[target]}")"
+
+
 
   [[ -n ${__o[options]} ]] && __opts+=" ${__o[options]}"
   [[ -n ${__o[filter]} ]] && __cmd+="-filter '${__o[filter]}' "
@@ -27,7 +29,18 @@ main(){
 
   if ((__nolist!=1)); then
     __opts+=" -dmenu"
-    [[ ! -t 0 ]] && __list=stdin
+    [[ ! -t 0 ]] && {
+
+      __list=stdin
+
+      # we copy stdin to a temporary file $_stdin_copy
+      # that way we can do stuff ( wc in setincludes() )
+      # without worrying that we close and lose whats there
+      _stdin_copy=$(mktemp)
+      trap 'rm "$_stdin_copy"' EXIT
+      cp /dev/stdin "$_stdin_copy"
+
+    }
   else
     __list=nolist
   fi
@@ -38,10 +51,12 @@ main(){
   setgeometry "${__o[layout]:-default}"
   setincludes
 
+  # __list=$(< $_stdin_copy)
+
   if [[ $__list = stdin ]]; then
-    cat
-  elif [[ -n $__list ]] && ((__nolist!=1));then
-    printf '%s\n' "${__o[top]:-}" "__START" "${__list}" | awk '
+    cat $_stdin_copy
+  elif [[ $__list && $__nolist != 1 ]];then
+    printf '%s\n' "${__o[top]:-}" "__START" "$__list" | awk '
     {
       if (start==1) {
         for (t in tops) {
@@ -50,7 +65,7 @@ main(){
         if (tfnd[NR]!=$0) {lst[NR]=$0}
       }
       if ($0=="__START") {start=1}
-      if (start!=1) {tops[NR]=$0;nums++}
+      if (start!=1) {tops[NR]=$0}
     }
 
     END {

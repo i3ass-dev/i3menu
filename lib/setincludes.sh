@@ -21,8 +21,13 @@ setincludes(){
         && __height=0
     }
     listview_layout="$__orientation"
-    ((__nolist!=1)) \
-      && listview_lines="$(($(echo "${__list}" | wc -l)-1))"
+    ((__nolist!=1)) && {
+      if [[ $__list = stdin ]]; then
+        listview_lines=$(wc -l < "$_stdin_copy")
+      else
+        listview_lines="$(($(wc -l <<< "$__list")-1))"
+      fi
+    }
   fi
 
   [[ ${__o[include]} =~ [p] ]] && inc+=(prompt)
