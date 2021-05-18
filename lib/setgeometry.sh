@@ -5,7 +5,7 @@ defaultoffset(){
   __ypos=0
   __o[xoffset]=0
   __o[yoffset]=0
-  __o[width]="100%"
+  __o[width]=${i3list[WAW]}
   __height=20
   __o[layout]=default
   __orientation=horizontal
@@ -16,38 +16,18 @@ setgeometry(){
 
   __layout="$1"
 
-  # i3list[TWB]=20               # Target Window titlebar height
-  # i3list[TWC]=94179890124352   # Target Window con_id
-  # i3list[TTW]=257              # Target Window tab width
-  # i3list[TTX]=0                # Target Window tab x postion
-  # i3list[TWH]=220              # Target Window height
-  # i3list[TWW]=514              # Target Window width
-  # i3list[TWX]=0                # Target Window x position
-  # i3list[TWY]=0                # Target Window y position
-  # i3list[CAL]=tabbed           # Container A Layout
-  # i3list[CBL]=tabbed           # Container B Layout
-  # i3list[SAB]=514              # Current split: AB
-  # i3list[SAC]=220              # Current split: AC
-  # i3list[SBD]=220              # Current split: BD
-  # i3list[SCD]=1080             # Current split: CD
-  # i3list[LVI]=CBA              # Visible i3fyra containers
-  # i3list[WAH]=1920             # Active Workspace height
-  # i3list[WAW]=1080             # Active Workspace width
-  # i3list[WAX]=0                # Active Workspace x position
-  # i3list[WAY]=0                # Active Workspace y position
-
   # default geometry
   : "${__xpos:=${__o[xpos]:-0}}"
   : "${__ypos:=${__o[ypos]:-0}}"
   : "${__o[xoffset]:=0}"
   : "${__o[yoffset]:=0}"
-  : "${__o[width]:="100%"}"
+  : "${__o[width]:=${i3list[WAW]}}"
   : "${__height:=${__o[height]:-${i3list[TWB]:-20}}}"
   : "${__o[anchor]:=1}"
   : "${__orientation:=horizontal}"
 
-  # if layout is window or container, but no list titlebar
-  [[ $__layout =~ A|B|C|D|window ]] && [[ -z ${__list:-} ]] && {
+  # if layout is window or container, but no list -> titlebar
+  [[ $__layout =~ A|B|C|D|window && ! -f $_tmp_list_file ]] && {
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
@@ -59,8 +39,8 @@ setgeometry(){
     fi
   }
 
-  # if layout is container but container is not visible
-  [[ $__layout =~ A|B|C|D ]] && [[ ! ${i3list[LVI]} =~ [${__o[layout]}] ]] && {
+  # if layout is container but container is not visible -> default
+  [[ $__layout =~ A|B|C|D ]] && [[ ! ${i3list[LVI]} =~ [${__layout}] ]] && {
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
       __layout=fallback
@@ -72,7 +52,7 @@ setgeometry(){
     fi
   }
 
-  # if layout is window, tab or titlebar but no target window, default
+  # if layout is window, tab or titlebar but no target window -> default
   [[ $__layout =~ window|tab|titlebar ]] && [[ -z ${i3list[TWC]} ]] && {
     defaultoffset
     if [[ -n ${__o[fallback]:-} ]]; then
@@ -151,23 +131,32 @@ setgeometry(){
           __height=$((i3list[WAH]-__ypos))
         ;;
       esac
-      ((__height==0)) && __height="${i3list[WAH]}"
-      ((__o[width]==0)) && __o[width]="${i3list[WAW]}"
+
+      ((__height))   || __height="${i3list[WAH]}"
+      ((__o[width])) || __o[width]="${i3list[WAW]}"
       __orientation=vertical
       __o[orientation]=""
     ;;
 
     mouse )
-      declare -A __mouse
+
+      # xdotool getmouselocation --shell ; example:
+      # X=667
+      # Y=175
+      # SCREEN=0
+      # WINDOW=6291526
+      #
+      # AWK turns the output from: WINDOW=.. -> xdo_geo[WINDOW]=...
+      # before it's evaluated
+
+      declare -A xdo_geo
 
       eval "$(xdotool getmouselocation --shell | \
-        awk -v FS='=' '{
-          printf("__mouse[%s]=%s\n",$1,$2)
-        }'
+        awk '{ printf("xdo_geo[%s]=%s\n",$1,$2) }' FS='='
       )"
 
-      __xpos="$((__mouse[X]))"
-      __ypos="$((__mouse[Y]))"
+      __xpos="$((xdo_geo[X]))"
+      __ypos="$((xdo_geo[Y]))"
     ;;
 
   esac

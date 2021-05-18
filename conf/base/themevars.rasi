@@ -27,6 +27,6 @@
   selectedfg:  #FFFFE8;
   selectedbg:  #8888c8;
 
-  font1: "FixedFixedsys 12";
+  font1: "monospace 12";
 }
 

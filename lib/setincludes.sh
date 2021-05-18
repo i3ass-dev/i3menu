@@ -4,30 +4,23 @@ setincludes(){
   local entry_expand entry_width listview_layout 
   local window_content horibox_content listview_lines
 
-  [[ -n ${__o[prompt]:-} ]] \
-    && __cmd+="-p '${__o[prompt]}' " \
-    || __o[include]=${__o[include]/[p]/}
+  [[ -n ${__o[prompt]} ]] || __o[include]=${__o[include]/[p]/}
 
-  if [[ -z ${__list:-} ]]; then
-    __o[include]=${__o[include]/[l]/}
+  if [[ -f $_tmp_list_file ]]; then
 
-    entry_expand=true
-    entry_width=0
-
-  else
     [[ -n ${__o[orientation]:-} ]] && {
       __orientation=${__o[orientation]}
       [[ $__orientation = vertical ]] && [[ -z ${__o[height]} ]] \
         && __height=0
     }
     listview_layout="$__orientation"
-    ((__nolist!=1)) && {
-      if [[ $__list = stdin ]]; then
-        listview_lines=$(wc -l < "$_stdin_copy")
-      else
-        listview_lines="$(($(wc -l <<< "$__list")-1))"
-      fi
-    }
+    listview_lines=$(wc -l < "$_tmp_list_file")
+
+
+  else
+    __o[include]=${__o[include]/[l]/}
+    entry_expand=true
+    entry_width=0
   fi
 
   [[ ${__o[include]} =~ [p] ]] && inc+=(prompt)
@@ -39,14 +32,20 @@ setincludes(){
     window_content="[ mainbox ]"
     inputbar_content="[${__o[include]//' '/','}]"
   else
+    # limit number of lines in horizontal menu, 
+    # it gets slow otherwise...
+    ((listview_lines > 500)) && listview_lines=500
     [[ ${__o[include]} =~ [l] ]] && inc+=(listview)
     __o[include]=${inc[*]}
     horibox_content="[${__o[include]//' '/','}]"
     window_content="[ horibox ]"
   fi
 
+
+  # TODO: why this test for negative zero???
   if [[ $__layout = mouse ]] || { [[ $__ypos -lt 0 || $__ypos = -0 ]] && ((__o[anchor]<7)) ;}; then
 
+    ERM "$__ypos ${__o[width]}"
     adjustposition "$__ypos" &
     
     # move window offscreen if:

@@ -1,38 +1,34 @@
 #!/usr/bin/env bash
 
 adjustposition() {
-  local newy newx opty
+  declare -i newy newx opty
 
-  opty="${1:-0}"
+  declare -A geo
 
-  declare -A __menu
+  # xdotool --getwindowgeometry --shell ; example:
+  # WINDOW=6291526
+  # X=0
+  # Y=43
+  # WIDTH=1568
+  # HEIGHT=171
+  # SCREEN=0
+  #
+  # AWK turns the output from: WINDOW=.. -> geo[WINDOW]=...
+  # before it's evaluated
 
   eval "$(xdotool search --sync --classname rofi getwindowgeometry --shell | \
-    awk -v FS='=' '{
-      printf("__menu[%s]=%s\n",$1,$2)
-    }'
+    awk '{printf("geo[%s]=%s\n",$1,$2)}' FS='='
   )"
 
-  if ((__menu[X]<i3list[WAX])); then
-    newx="${i3list[WAX]}"
-  elif (((__menu[X]+__menu[WIDTH])>i3list[WAW])); then
-    newx="$((i3list[WAW]-__menu[WIDTH]))"
-  else
-    newx=${__menu[X]}
-  fi
+  opty=$(( ${1:-0} <= -0 ? i3list[WAH]-( (opty*-1)+geo[HEIGHT] ) : opty ))
 
+  newy=$(( opty < i3list[WAY] ? i3list[WAY] 
+         : opty+geo[HEIGHT] > i3list[WAH] ? i3list[WAH]-geo[HEIGHT] 
+         : opty ))
 
-  if ((opty<=-0)); then
-    opty=$((i3list[WAH]-((opty*-1)+__menu[HEIGHT])))
-  fi
+  newx=$(( geo[X] < i3list[WAX] ? i3list[WAX] 
+         : geo[X]+geo[WIDTH] > i3list[WAW] ? i3list[WAW]-geo[WIDTH] 
+         : geo[X] ))
 
-  if ((opty<i3list[WAY])); then
-    newy="${i3list[WAY]}"
-  elif (((opty+__menu[HEIGHT])>i3list[WAH])); then
-    newy="$((i3list[WAH]-__menu[HEIGHT]))"
-  else
-    newy="$opty"
-  fi
-
-  xdotool windowmove "${__menu[WINDOW]}" "$newx" "$newy"
+  xdotool windowmove "${geo[WINDOW]}" "$newx" "$newy"
 }

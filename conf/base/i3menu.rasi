@@ -1,6 +1,7 @@
 /**
-* Oneliner - by budRich 2018
-* Based on dmenu theme by Dave Davenport
+* i3menu rofi theme - by budRich 2018
+* derived from my old Oneliner.rasi
+* based on dmenu.rasi by Dave Davenport
 */
 
 #window {
