@@ -155,6 +155,14 @@ $ echo -e "one\ntwo\nthree" | i3menu --layout A --fallback '--layout window --fa
 
 The example above would first try to display a menu with `--layout A` if that fails, it will try a menu with `--layout window` and last if no target window can be found, the menu will get displayed at the mouse pointer.
 
+#options-verbose-description
+
+Print additional information to STDERR
+
+#options-dryrun-description
+
+Do not execute any i3-msg commands
+
 # options-help-description
 Show help and exit.
 
